@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  main:
+    build: ./main
+    container_name: job-portal-app
+    ports:
+      - "80:5000"
+      - "5000:5000"
+    environment:
+      MONGODB_URI: ${MONGODB_URI}
+      PORT: 5000
+      NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET}
+      CLOUDINARY_NAME: ${CLOUDINARY_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+

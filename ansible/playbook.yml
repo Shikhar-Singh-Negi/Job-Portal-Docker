@@ -1,0 +1,29 @@
+---
+- name: Deploy Job Portal Application
+  hosts: all
+  become: yes
+  tasks:
+    - name: Ensure Docker is installed
+      package:
+        name: docker.io
+        state: present
+
+    - name: Ensure Docker Compose is installed
+      package:
+        name: docker-compose
+        state: present
+
+    - name: Clone the repository (if not already there)
+      git:
+        repo: 'https://github.com/user/job-portal.git'
+        dest: /home/ubuntu/job-portal
+
+    - name: Copy .env files (optional/local)
+      # In a real scenario, use Ansible Vault for secrets
+      copy:
+        src: ../backend/.env
+        dest: /home/ubuntu/job-portal/backend/.env
+
+    - name: Run docker-compose up
+      shell:
+        cmd: docker-compose -f /home/ubuntu/job-portal/docker-compose.yml up -d
