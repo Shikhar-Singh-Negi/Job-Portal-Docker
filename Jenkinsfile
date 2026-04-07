@@ -41,7 +41,7 @@ pipeline {
                 docker run -d \
                 --name ${CONTAINER_NAME} \
                 -p 5000:5000 \
-                --env-file ./main/.env \
+                --env-file /home/ubuntu/app/server/.env \
                 ${IMAGE_NAME}:latest
                 """
             }
