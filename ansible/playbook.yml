@@ -18,11 +18,10 @@
         repo: 'https://github.com/user/job-portal.git'
         dest: /home/ubuntu/job-portal
 
-    - name: Copy .env files (optional/local)
-      # In a real scenario, use Ansible Vault for secrets
+    - name: Copy .env files
       copy:
-        src: ../backend/.env
-        dest: /home/ubuntu/job-portal/backend/.env
+        src: ../.env
+        dest: /home/ubuntu/job-portal/.env
 
     - name: Run docker-compose up
       shell:

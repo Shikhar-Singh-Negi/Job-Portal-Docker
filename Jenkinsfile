@@ -19,7 +19,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                sh "docker build -t ${IMAGE_NAME}:latest ./main"
+                sh "docker build -t ${IMAGE_NAME}:latest ."
             }
         }
 
@@ -36,7 +36,7 @@ pipeline {
                 sh """
                 docker run -d \
                 --name ${CONTAINER_NAME} \
-                -p 5000:3000 \
+                -p 5000:5000 \
                 --env-file /home/ubuntu/app/server/.env \
                 --restart unless-stopped \
                 ${IMAGE_NAME}:latest

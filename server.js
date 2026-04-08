@@ -51,7 +51,7 @@ app.get("/debug-sentry", function mainHandler(req, res) {
 });
 
 // Catch-all route to serve the build's index.html for any frontend routing
-app.get("/", (req, res) => {
+app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 

@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   main:
-    build: ./main
+    build: .
     container_name: job-portal-app
     ports:
       - "80:5000"
