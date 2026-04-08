@@ -28,11 +28,8 @@ const connectAll = async () => {
   }
 };
 
-// Middleware to ensure DB connection
-app.use(async (req, res, next) => {
-  await connectAll();
-  next();
-});
+// Initialize Connections once at startup
+connectAll();
 
 // Middlewares
 app.use(cors());
@@ -51,7 +48,7 @@ app.get("/debug-sentry", function mainHandler(req, res) {
 });
 
 // Catch-all route to serve the build's index.html for any frontend routing
-app.get("*", (req, res) => {
+app.get(/^(?!\/api).+/, (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
@@ -61,8 +58,7 @@ const port = process.env.PORT || 3000;
 Sentry.setupExpressErrorHandler(app);
 
 // In production (Docker), we listen on the port directly. 
-// Vercel handles the listener elsewhere (exports app), but for Docker/EC2/AppRunner, we need it.
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Server is running on port ${port}`);
 });
 
