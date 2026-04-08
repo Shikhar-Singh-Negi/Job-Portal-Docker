@@ -36,7 +36,7 @@ pipeline {
                 sh """
                 docker run -d \
                 --name ${CONTAINER_NAME} \
-                -p 5000:5000 \
+                -p 5000:3000 \
                 --env-file /home/ubuntu/app/server/.env \
                 --restart unless-stopped \
                 ${IMAGE_NAME}:latest
