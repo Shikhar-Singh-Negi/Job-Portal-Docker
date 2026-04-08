@@ -2,55 +2,61 @@ pipeline {
     agent any
 
     environment {
-        // Names updated to match project convention (docker-compose.yml and repo)
         IMAGE_NAME = "job-portal"
-        CONTAINER_NAME = "job-portal-app" 
+        CONTAINER_NAME = "job-portal-app"
         GITHUB_REPO = "https://github.com/Shikhar-Singh-Negi/Job-Portal-Docker.git"
     }
 
     stages {
+
         stage('Clone Code') {
             steps {
-                // Checkout the repository for the latest code
-                git url: "${GITHUB_REPO}", branch: "main"
+                echo 'Cloning repository...'
+                git branch: 'main', url: "${GITHUB_REPO}"
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                // Building the image using the 'main' folder context (containing the Backend/Dockerfile)
                 echo 'Building Docker image...'
                 sh "docker build -t ${IMAGE_NAME}:latest ./main"
             }
         }
 
-        stage('Stop and Remove Old Container') {
+        stage('Stop & Remove Old Container') {
             steps {
-                // Stop and remove the existing container if it exists
-                echo 'Removing old container...'
-                sh "docker stop ${CONTAINER_NAME} || true"
-                sh "docker rm ${CONTAINER_NAME} || true"
+                echo 'Removing old container if exists...'
+                sh "docker rm -f ${CONTAINER_NAME} || true"
             }
         }
 
         stage('Run New Container') {
             steps {
-                // Run the new container, exposing port 5000 and passing the .env from the 'main' directory
-                echo 'Running new container...'
+                echo 'Starting new container...'
                 sh """
                 docker run -d \
                 --name ${CONTAINER_NAME} \
                 -p 5000:5000 \
                 --env-file /home/ubuntu/app/server/.env \
+                --restart unless-stopped \
                 ${IMAGE_NAME}:latest
                 """
             }
         }
 
-        stage('Image Cleanup') {
+        stage('Verify Deployment') {
             steps {
-                // Remove unused/dangling docker images to optimize system storage
-                echo 'Pruning unused images...'
+                echo 'Checking container status...'
+                sh "docker ps | grep ${CONTAINER_NAME}"
+
+                echo 'Checking application logs...'
+                sh "docker logs ${CONTAINER_NAME} --tail 20"
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                echo 'Cleaning unused images...'
                 sh 'docker image prune -f'
             }
         }
@@ -58,10 +64,10 @@ pipeline {
 
     post {
         success {
-            echo "Successfully deployed ${IMAGE_NAME}!"
+            echo "✅ Deployment successful: ${IMAGE_NAME}"
         }
         failure {
-            echo "Deployment failed for ${IMAGE_NAME}."
+            echo "❌ Deployment failed!"
         }
     }
 }
